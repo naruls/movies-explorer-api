@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
+const {
+  urlError,
+} = require('../const/const');
+
 const movieSchema = new mongoose.Schema({
   country: {
     type: String,
@@ -16,7 +20,7 @@ const movieSchema = new mongoose.Schema({
   },
   duration: {
     type: Number,
-    required: true
+    required: true,
   },
   year: {
     type: String,
@@ -24,7 +28,7 @@ const movieSchema = new mongoose.Schema({
     minlength: 4,
     maxlength: 4,
   },
-  description : {
+  description: {
     type: String,
     required: true,
     minlength: 2,
@@ -37,7 +41,7 @@ const movieSchema = new mongoose.Schema({
       validator(link) {
         return validator.isURL(link);
       },
-      message: 'Введён некорректный URL',
+      message: urlError,
     },
   },
   trailer: {
@@ -47,7 +51,7 @@ const movieSchema = new mongoose.Schema({
       validator(link) {
         return validator.isURL(link);
       },
-      message: 'Введён некорректный URL',
+      message: urlError,
     },
   },
   thumbnail: {
@@ -57,7 +61,7 @@ const movieSchema = new mongoose.Schema({
       validator(link) {
         return validator.isURL(link);
       },
-      message: 'Введён некорректный URL',
+      message: urlError,
     },
   },
   owner: {
@@ -66,7 +70,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     required: true,
   },
   nameRU: {

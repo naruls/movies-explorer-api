@@ -15,20 +15,23 @@ const options = {
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
-const users = require('./routes/users');
-const movies = require('./routes/movies');
-const NotFoundError = require('./errors/NotFoundError');
-const { login, createUser } = require('./controllers/users');
+const helmet = require('helmet');
+const limiterRate = require('./middlewares/limitRate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const auth = require('./middlewares/auth');
-const { Login, User } = require('./middlewares/validator');
+const router = require('./routes/routs');
+const centralHandlerErr = require('./middlewares/centralHandlerErr');
 require('dotenv').config();
+
+const {
+  mongodbMovies,
+  crashTestError,
+} = require('./const/const');
 
 const app = express();
 
 const { PORT = 3001 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
+mongoose.connect(mongodbMovies, {
 });
 
 app.use('*', cors(options));
@@ -39,41 +42,23 @@ app.use(cookieParser());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
+    throw new Error(crashTestError);
   }, 0);
 });
 
 app.use(requestLogger);
 
-app.post('/signin', Login, login);
-app.post('/signup', User, createUser);
+app.use(helmet());
 
-app.use(auth);
+app.use(limiterRate);
 
-app.use('/', users);
-
-app.use('/', movies);
-
-app.all('*', (req, res, next) => {
-  next(new NotFoundError('Ресурс не найден'));
-});
+app.use('/', router);
 
 app.use(errorLogger);
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
+app.use(centralHandlerErr);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`); //eslint-disable-line

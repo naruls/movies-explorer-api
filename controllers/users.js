@@ -9,13 +9,23 @@ const LoginError = require('../errors/LoginError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+const {
+  notFoundConstUserError,
+  castConstGetUserError,
+  validationConstUserError,
+  castConstUpdateUserError,
+  mongoConstUserError,
+  loginReply,
+  loginConstUserError,
+} = require('../const/const');
+
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => new NotFoundError('Нет пользователя с таким id'))
+    .orFail(() => new NotFoundError(notFoundConstUserError))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new CastError('Некорректный id'));
+        next(new CastError(castConstGetUserError));
       } else {
         next(err);
       }
@@ -23,17 +33,19 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id,
-    { name, about },
+    { name, email },
     { new: true, runValidators: true })
-    .orFail(() => new NotFoundError('Нет пользователя с таким id'))
+    .orFail(() => new NotFoundError(notFoundConstUserError))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
+        next(new ValidationError(validationConstUserError));
       } else if (err.name === 'CastError') {
-        next(new CastError('Переданы некорректные данные при обновлении профиля'));
+        next(new CastError(castConstUpdateUserError));
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
+        next(new MongoError(mongoConstUserError));
       } else {
         next(err);
       }
@@ -60,15 +72,14 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные при создании пользователя'));
+        next(new ValidationError(validationConstUserError));
       } else if (err.name === 'MongoServerError' && err.code === 11000) {
-        next(new MongoError('Такой Email уже занят'));
+        next(new MongoError(mongoConstUserError));
       } else {
         next(err);
       }
     });
 };
-
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -85,9 +96,9 @@ module.exports.login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
-        .send({ message: 'Авторизация прошла успешно' });
+        .send({ message: loginReply });
     })
     .catch(() => {
-      next(new LoginError('Неверный логин либо пароль'));
+      next(new LoginError(loginConstUserError));
     });
 };

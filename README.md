@@ -6,4 +6,4 @@ movies-explorer-api является частью дипломного прое�
 
 ## Домен сервера
 
-`https://api.movies.diploma.nomoredomains.rocks/`   
+`https://api.kirillnihaenkonaruls.nomoredomains.icu/`   

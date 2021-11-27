@@ -1,12 +1,16 @@
 const { celebrate, Joi } = require('celebrate');
 
-const result = new RegExp('^((ftp|http|https):\/\/)?(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9\-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-\/])*)?'); //eslint-disable-line
+const isUrl = require('validator/lib/isURL');
+
+const {
+  urlError,
+} = require('../const/const');
 
 const Url = (value) => {
-  if (result.test(value)) {
+  if (isUrl(value)) {
     return value;
   }
-  throw new Error('Некорректный Url');
+  throw new Error(urlError);
 };
 
 const Id = celebrate({
