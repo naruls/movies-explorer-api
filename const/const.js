@@ -1,4 +1,4 @@
-const mongodbMovies = 'mongodb://localhost:27017/moviesdb';
+const mongodbMovies = 'mongodb://127.0.0.1/mestodb';
 const crashTestError = 'Сервер сейчас упадёт';
 const validationConstError = 'Переданы некорректные данные при создании фильма';
 const notFoundConstError = 'Фильм с указанным _id не найдена';

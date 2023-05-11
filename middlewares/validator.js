@@ -32,7 +32,7 @@ const Movie = celebrate({
     director: Joi.string().required().min(2).max(30),
     duration: Joi.number().required(),
     year: Joi.string().required().min(4).max(4),
-    description: Joi.string().required().min(2).max(1000),
+    description: Joi.string().required().min(2).max(2000),
     image: Joi.string().required().custom(Url),
     trailer: Joi.string().required().custom(Url),
     thumbnail: Joi.string().required().custom(Url),

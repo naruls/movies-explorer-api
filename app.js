@@ -4,6 +4,7 @@ const cors = require('cors');
 const options = {
   origin: [
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
@@ -29,7 +30,7 @@ const {
 
 const app = express();
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 mongoose.connect(mongodbMovies, {
 });

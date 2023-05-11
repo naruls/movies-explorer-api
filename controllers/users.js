@@ -91,12 +91,12 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       res
-        .cookie('jwt', token, {
+        .cookie('token', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: true,
         })
-        .send({ message: loginReply });
+        .send({ token });
     })
     .catch(() => {
       next(new LoginError(loginConstUserError));
